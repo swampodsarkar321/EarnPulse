@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Nav from "../components/Nav";
-import Footer from "../components/Footer";
+import AppShell from "../components/AppShell";
 import AdModal from "../components/AdModal";
 import { AD_LINKS } from "../lib/links";
 import { CONFIG, fmtMoney } from "../lib/config";
@@ -21,49 +20,43 @@ export default function Watch() {
   }, []);
 
   return (
-    <>
-      <Nav />
-      <section className="dash container">
-        {!me && <p className="muted">Loading...</p>}
+    <AppShell>
+      {!me && <p className="muted">Loading...</p>}
 
-        {me && !me.loggedIn && (
-          <div className="tool">
-            <h2>Please login</h2>
-            <p className="muted">You must be logged in to watch ads and earn.</p>
-            <a href="/login" className="btn">Login</a>
+      {me && !me.loggedIn && (
+        <div className="tool">
+          <h2>Please login</h2>
+          <p className="muted">You must be logged in to watch ads and earn.</p>
+          <a href="/login" className="btn btn-lg">Login</a>
+        </div>
+      )}
+
+      {me && me.loggedIn && (
+        <>
+          <div className="section-head">
+            <span className="eyebrow">Watch ads</span>
+            <h2>Earn by watching ads</h2>
+            <p className="muted">Open the sponsor ad in a new tab, view it, wait, then claim. Limit 20 views per ad per day.</p>
           </div>
-        )}
 
-        {me && me.loggedIn && (
-          <>
-            <div className="section-head" style={{ textAlign: "left", marginBottom: 26, maxWidth: "100%" }}>
-              <span className="eyebrow">Watch ads</span>
-              <h2 style={{ fontSize: 30 }}>Earn by watching ads</h2>
-              <p className="muted">Open the sponsor ad in a new tab, view it, wait, then claim your reward. Limit 20 views per ad per day.</p>
-            </div>
-
-            <div className="offer-frame">
-              <div className="ad-list">
-                {ADS.map((ad) => (
-                  <div className="ad-card" key={ad.id}>
-                    <div className="ad-thumb">{ad.icon}</div>
-                    <div className="ad-info">
-                      <b>{ad.title}</b>
-                      <span className="muted">{ad.advertiser}</span>
-                    </div>
-                    <div className="ad-reward">+${fmtMoney(ad.amount)}</div>
-                    <AdModal ad={ad} />
-                  </div>
-                ))}
+          <div className="ad-list">
+            {ADS.map((ad) => (
+              <div className="ad-card" key={ad.id}>
+                <div className="ad-thumb">{ad.icon}</div>
+                <div className="ad-info">
+                  <b>{ad.title}</b>
+                  <span className="muted">{ad.advertiser}</span>
+                </div>
+                <div className="ad-reward">+${fmtMoney(ad.amount)}</div>
+                <AdModal ad={ad} />
               </div>
-              <p className="muted" style={{ marginTop: 16, textAlign: "center" }}>
-                New ads are added daily. The more you watch, the more you earn.
-              </p>
-            </div>
-          </>
-        )}
-      </section>
-      <Footer />
-    </>
+            ))}
+          </div>
+          <p className="muted" style={{ marginTop: 14, textAlign: "center" }}>
+            New ads are added daily. The more you watch, the more you earn.
+          </p>
+        </>
+      )}
+    </AppShell>
   );
 }

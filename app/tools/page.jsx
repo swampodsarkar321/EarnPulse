@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Nav from "../components/Nav";
-import Footer from "../components/Footer";
+import AppShell from "../components/AppShell";
 
 export default function Tools() {
   const [url, setUrl] = useState("");
@@ -25,9 +24,8 @@ export default function Tools() {
   }
 
   return (
-    <>
-      <Nav />
-      <section className="tool container">
+    <AppShell>
+      <section className="tool">
         <h2>Shortlink Generator</h2>
         <p className="muted">API key stays hidden on the server. Paste any URL, get a monetized shrtfly link.</p>
         <input
@@ -54,7 +52,6 @@ export default function Tools() {
           </div>
         )}
       </section>
-      <Footer />
-    </>
+    </AppShell>
   );
 }

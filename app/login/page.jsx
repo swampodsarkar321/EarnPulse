@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Nav from "../components/Nav";
-import Footer from "../components/Footer";
+import AppShell from "../components/AppShell";
 
 export default function Login() {
   const [name, setName] = useState("");
@@ -19,14 +18,13 @@ export default function Login() {
       body: JSON.stringify({ action: "login", name, pass }),
     });
     const d = await r.json();
-    if (d.ok) router.push("/dashboard");
+    if (d.ok) router.push("/");
     else setErr(d.error);
   }
 
   return (
-    <>
-      <Nav />
-      <section className="tool container">
+    <AppShell>
+      <section className="tool">
         <h2>Login</h2>
         <form className="form-row" style={{ justifyContent: "center" }} onSubmit={submit}>
           <div><label>Username</label><input value={name} onChange={(e) => setName(e.target.value)} /></div>
@@ -34,9 +32,8 @@ export default function Login() {
           <div><label>&nbsp;</label><button className="btn" type="submit">Login</button></div>
         </form>
         {err && <p className="muted" style={{ color: "#ff6b6b" }}>{err}</p>}
-        <p className="muted" style={{ marginTop: 14 }}>No account? <a href="/signup" style={{ color: "var(--accent2)" }}>Sign up</a></p>
+        <p className="muted" style={{ marginTop: 14 }}>No account? <a href="/signup" style={{ color: "var(--accent-2)" }}>Sign up</a></p>
       </section>
-      <Footer />
-    </>
+    </AppShell>
   );
 }

@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Nav from "../components/Nav";
-import Footer from "../components/Footer";
+import AppShell from "../components/AppShell";
 import { fmtMoney } from "../lib/config";
 
 export default function Admin() {
@@ -19,9 +18,8 @@ export default function Admin() {
   }
 
   return (
-    <>
-      <Nav />
-      <section className="tool container">
+    <AppShell>
+      <section className="tool">
         <h2>Owner Panel — Profit</h2>
         <div className="form-row" style={{ justifyContent: "center" }}>
           <div><label>Admin Key</label><input value={key} onChange={(e) => setKey(e.target.value)} placeholder="admin key" /></div>
@@ -44,7 +42,6 @@ export default function Admin() {
           </p>
         )}
       </section>
-      <Footer />
-    </>
+    </AppShell>
   );
 }

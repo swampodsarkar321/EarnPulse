@@ -1,25 +1,17 @@
-import Nav from "../components/Nav";
-import Footer from "../components/Footer";
+import AppShell from "../components/AppShell";
 
 export default function Thanks() {
   return (
-    <>
-      <Nav />
-      <section className="cta">
-        <div className="container">
-          <div className="cta-box">
-            <span className="eyebrow">Reward pending</span>
-            <h2>Thanks for watching! 🎉</h2>
-            <p>
-              Your ad view was recorded. Your reward is being credited to your
-              EarnPulse balance shortly. You can close this tab and claim it on the
-              dashboard.
-            </p>
-            <a href="/dashboard" className="btn btn-lg">Back to Dashboard</a>
-          </div>
-        </div>
+    <AppShell>
+      <section className="tool" style={{ marginTop: 40 }}>
+        <span className="eyebrow">Reward pending</span>
+        <h2>Thanks for watching! 🎉</h2>
+        <p className="muted" style={{ marginTop: 10 }}>
+          Your ad view was recorded. Your reward is being credited to your EarnPulse
+          balance shortly. You can close this tab and claim it in the app.
+        </p>
+        <a href="/" className="btn btn-lg">Back to App</a>
       </section>
-      <Footer />
-    </>
+    </AppShell>
   );
 }
