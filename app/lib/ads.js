@@ -1,7 +1,7 @@
 // Client-safe config (no secrets). shrtfly shortlinks that open a full-page ad.
-// Replace these with REAL shortlinks you create in the shrtfly dashboard.
+// Created via shrtfly API — each opens a real ad (you earn, user gets USER_RATE).
 export const AD_LINKS = [
-  "https://shrtfly.com/REPLACE_WITH_YOUR_SHORTLINK_1",
-  "https://shrtfly.com/REPLACE_WITH_YOUR_SHORTLINK_2",
-  "https://shrtfly.com/REPLACE_WITH_YOUR_SHORTLINK_3",
+  "https://shrtslug.biz/epad1",
+  "https://shrtslug.biz/epad2",
+  "https://shrtslug.biz/epad3",
 ];
