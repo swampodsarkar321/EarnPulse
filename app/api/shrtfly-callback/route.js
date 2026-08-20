@@ -1,4 +1,4 @@
-import { creditTask } from "../../../lib/store";
+import { creditTask } from "../../lib/store";
 
 export const dynamic = "force-dynamic";
 
