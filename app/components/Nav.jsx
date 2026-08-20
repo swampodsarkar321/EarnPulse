@@ -9,9 +9,10 @@ export default function Nav() {
         <nav>
           <a href="/">Home</a>
           <a href="/dashboard">Dashboard</a>
-          <a href="/tools">Tools</a>
-          <a href="/login">Login</a>
-          <a href="/#join" className="btn btn-sm">Get Started</a>
+          <a href="/#earn">Watch Ads</a>
+          <a href="/dashboard">Wallet</a>
+          <a href="/dashboard">Profile</a>
+          <a href="/login" className="btn btn-sm">Login</a>
         </nav>
       </div>
     </header>

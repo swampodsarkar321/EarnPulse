@@ -24,9 +24,9 @@ export default function Footer() {
             <ul>
               <li><a href="/">Home</a></li>
               <li><a href="/dashboard">Dashboard</a></li>
-              <li><a href="/tools">Link Tools</a></li>
-              <li><a href="/#how">How it works</a></li>
-              <li><a href="/#join">Get started</a></li>
+              <li><a href="/#earn">Watch Ads</a></li>
+              <li><a href="/dashboard">Wallet</a></li>
+              <li><a href="/dashboard">Profile</a></li>
             </ul>
           </div>
 
