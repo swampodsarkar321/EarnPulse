@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { creditTask } from "../../lib/store";
+import { creditTask } from "../../../lib/store";
 
 export const dynamic = "force-dynamic";
 
