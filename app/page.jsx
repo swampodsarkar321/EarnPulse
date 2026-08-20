@@ -1,6 +1,7 @@
 import Nav from "./components/Nav";
 import Footer from "./components/Footer";
 import EarnButton from "./components/EarnButton";
+import { AD_LINKS } from "./lib/ads";
 
 export default function Home() {
   return (
@@ -54,11 +55,11 @@ export default function Home() {
           {/* TODO: replace href with your shrtfly shortlinks from /tools */}
           <div className="offer-frame">
             <div className="earn-list">
-              <EarnButton label="▶ Watch ad & earn $0.01" />
-              <EarnButton label="▶ Watch ad & earn $0.01" />
-              <EarnButton label="▶ Watch ad & earn $0.01" />
+              <EarnButton label="▶ Watch ad & earn $0.01" adUrl={AD_LINKS[0]} />
+              <EarnButton label="▶ Watch ad & earn $0.01" adUrl={AD_LINKS[1]} />
+              <EarnButton label="▶ Watch ad & earn $0.01" adUrl={AD_LINKS[2]} />
               <p className="muted" style={{ marginTop: 14 }}>
-                Login required. Each click credits your balance; the owner keeps the margin.
+                Login required. Each click opens a real ad (new tab) and credits your balance.
               </p>
             </div>
           </div>

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Nav from "../components/Nav";
 import Footer from "../components/Footer";
 import EarnButton from "../components/EarnButton";
+import { AD_LINKS } from "../lib/ads";
 
 export default function Dashboard() {
   const [me, setMe] = useState(null);
@@ -44,9 +45,9 @@ export default function Dashboard() {
             <div className="panel">
               <h3>Earn now</h3>
               <div className="earn-list">
-                <EarnButton label="▶ Watch ad & earn $0.01" />
-                <EarnButton label="▶ Watch ad & earn $0.01" />
-                <EarnButton label="▶ Watch ad & earn $0.01" />
+                <EarnButton label="▶ Watch ad & earn $0.01" adUrl={AD_LINKS[0]} />
+                <EarnButton label="▶ Watch ad & earn $0.01" adUrl={AD_LINKS[1]} />
+                <EarnButton label="▶ Watch ad & earn $0.01" adUrl={AD_LINKS[2]} />
               </div>
             </div>
 
