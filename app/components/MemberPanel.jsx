@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { fmtMoney } from "../lib/config";
+import { fmtMoney, CONFIG } from "../lib/config";
 
 function ago(ts) {
   const s = Math.floor((Date.now() - ts) / 1000);
@@ -53,7 +53,7 @@ export default function MemberPanel() {
           <a href="#earn" className="opt-card">
             <div className="ic">▶</div>
             <b>Watch Ads</b>
-            <span className="muted">Earn $0.01 per view</span>
+            <span className="muted">Earn ${fmtMoney(CONFIG.USER_RATE)} per view</span>
           </a>
           <a href="/dashboard" className="opt-card">
             <div className="ic">👤</div>

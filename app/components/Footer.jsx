@@ -4,7 +4,7 @@ export default function Footer() {
       <div className="container">
         <div className="footer-grid">
           <div>
-            <div className="brand"><span className="mark">⚡</span> EarnPulse</div>
+            <div className="brand"><span className="mark"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg></span> EarnPulse</div>
             <p className="desc">
               EarnPulse is a rewards platform that pays you to watch ads and complete
               simple offers from trusted partners. Earn in your free time and cash out

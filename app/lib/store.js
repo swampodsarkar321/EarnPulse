@@ -4,9 +4,15 @@ import { CONFIG } from "./config";
 
 // All data lives in Firebase Realtime Database now (persists on Vercel).
 // Structure:
-//   users/<name> = { pass, balance }
+//   users/<name> = { pass, balance, lastEarnAt }
+//   users/<name>/daily/<YYYY-MM-DD>/ads/<adId> = <count>   (per-ad daily views)
+//   users/<name>/history = [ { amount, at } ]
 //   owner        = { profit, clicks, paidOut }
+//   tasks/<token> = { name, userAmount, ownerProfit, adId, createdAt, expiresAt, claimed }
 
+function today() {
+  return new Date().toISOString().slice(0, 10);
+}
 export async function getUser(name) {
   const snap = await get(child(ref(db, "users"), name));
   return snap.exists() ? snap.val() : null;
@@ -65,7 +71,7 @@ export async function cooldownOk(name) {
   return Date.now() - u.lastEarnAt >= CONFIG.COOLDOWN_MS;
 }
 
-export async function createTask(name, userAmount, ownerProfit) {
+export async function createTask(name, userAmount, ownerProfit, adId) {
   const token =
     typeof globalThis.crypto?.randomUUID === "function"
       ? globalThis.crypto.randomUUID()
@@ -74,6 +80,7 @@ export async function createTask(name, userAmount, ownerProfit) {
     name,
     userAmount,
     ownerProfit,
+    adId: adId || null,
     createdAt: Date.now(),
     expiresAt: Date.now() + CONFIG.TASK_TTL_MS,
     claimed: false,
@@ -82,6 +89,18 @@ export async function createTask(name, userAmount, ownerProfit) {
   const u = await getUser(name);
   if (u) await set(child(ref(db, "users"), name), { ...u, lastEarnAt: Date.now() });
   return token;
+}
+
+// Per-ad daily view limit (anti-abuse). Counts only successful (claimed) views.
+export async function getDailyCount(name, adId, date) {
+  const snap = await get(ref(db, `users/${name}/daily/${date}/ads/${adId}`));
+  return snap.exists() ? Number(snap.val() || 0) : 0;
+}
+
+export async function incDailyCount(name, adId, date) {
+  const cur = await getDailyCount(name, adId, date);
+  await set(ref(db, `users/${name}/daily/${date}/ads/${adId}`), cur + 1);
+  return cur + 1;
 }
 
 export async function creditTask(token) {
@@ -111,6 +130,12 @@ export async function creditTask(token) {
   };
   await set(ref(db, "owner"), newOwner);
 
+  // count this successful view toward the per-ad daily limit
+  if (t.adId) {
+    const dCount = await incDailyCount(name, t.adId, today());
+    var dailyLeft = CONFIG.AD_DAILY_LIMIT - dCount;
+  }
+
   await set(ref(db, "tasks/" + token), { ...t, claimed: true, claimedAt: Date.now() });
-  return { ok: true, balance: newBalance, earned: t.userAmount, ownerProfit: t.ownerProfit };
+  return { ok: true, balance: newBalance, earned: t.userAmount, ownerProfit: t.ownerProfit, dailyLeft: typeof dailyLeft === "number" ? dailyLeft : null };
 }

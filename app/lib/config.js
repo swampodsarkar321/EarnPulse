@@ -12,6 +12,7 @@ export const CONFIG = {
   WAIT_MS: 12000,     // user must wait this long after opening ad before claiming
   TASK_TTL_MS: 120000, // a task token expires if not claimed in 2 min
   AD_REPLAY_COOLDOWN_MS: 60000, // after earning from one ad, that ad's button is locked 1 min (client-side)
+  AD_DAILY_LIMIT: 20, // max earned views per individual ad, per user, per day (server-enforced in Firebase)
 
   // Destination the shrtfly shortlink points to (change to a real offer page)
   AD_DESTINATION: "https://example.com/page",

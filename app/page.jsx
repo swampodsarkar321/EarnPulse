@@ -6,9 +6,9 @@ import { AD_LINKS } from "./lib/links";
 import { CONFIG, fmtMoney } from "./lib/config";
 
 const ADS = [
-  { icon: "🛒", title: "Top online store deal", advertiser: "Sponsor · Mainstream", amount: CONFIG.USER_RATE, adUrl: AD_LINKS[0] },
-  { icon: "🎮", title: "New mobile game release", advertiser: "Sponsor · Mainstream", amount: CONFIG.USER_RATE, adUrl: AD_LINKS[1] },
-  { icon: "📱", title: "Win a gift card", advertiser: "Sponsor · Mainstream", amount: CONFIG.USER_RATE, adUrl: AD_LINKS[2] },
+  { id: "ad1", icon: "🛒", title: "Top online store deal", advertiser: "Sponsor · Mainstream", amount: CONFIG.USER_RATE, adUrl: AD_LINKS[0] },
+  { id: "ad2", icon: "🎮", title: "New mobile game release", advertiser: "Sponsor · Mainstream", amount: CONFIG.USER_RATE, adUrl: AD_LINKS[1] },
+  { id: "ad3", icon: "📱", title: "Win a gift card", advertiser: "Sponsor · Mainstream", amount: CONFIG.USER_RATE, adUrl: AD_LINKS[2] },
 ];
 
 export default function Home() {

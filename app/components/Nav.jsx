@@ -5,7 +5,7 @@ export default function Nav() {
         🎉 Earn <b>$0.0005</b> for every ad you watch · Instant payouts via bKash, Nagad &amp; USDT
       </div>
       <div className="container nav-inner">
-        <div className="logo"><span className="mark">⚡</span> EarnPulse</div>
+        <div className="logo"><span className="mark"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg></span> EarnPulse</div>
         <nav>
           <a href="/">Home</a>
           <a href="/dashboard">Dashboard</a>
