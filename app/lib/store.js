@@ -84,14 +84,14 @@ export async function createTask(name, userAmount, ownerProfit) {
   return token;
 }
 
-export async function claimTask(token, name) {
+export async function creditTask(token) {
   const snap = await get(ref(db, "tasks/" + token));
   if (!snap.exists()) return { error: "invalid task" };
   const t = snap.val();
   if (t.claimed) return { error: "already claimed" };
-  if (t.name !== name) return { error: "mismatch" };
   if (Date.now() > t.expiresAt) return { error: "expired" };
 
+  const name = t.name;
   const u = await getUser(name);
   if (!u) return { error: "user not found" };
   const newBalance = (u.balance || 0) + t.userAmount;

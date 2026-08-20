@@ -20,8 +20,9 @@ export default function EarnButton({ label, adUrl }) {
       setBusy(false);
       return;
     }
-    // open the real ad
-    if (adUrl) window.open(adUrl, "_blank", "noopener");
+    // open the real ad (per-task shortlink from server, or fallback prop)
+    const open = d.adUrl || adUrl;
+    if (open) window.open(open, "_blank", "noopener");
     setToken(d.token);
 
     // countdown before claim is allowed (proves the ad was opened/watched)

@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { createTask, cooldownOk } from "../../lib/store";
+import { createShortlink } from "../../lib/shrtfly";
 import { CONFIG } from "../../lib/config";
 
 export const dynamic = "force-dynamic";
@@ -15,5 +16,9 @@ export async function POST(req) {
   const profit = CONFIG.NETWORK_RATE - CONFIG.USER_RATE;
   const token = await createTask(name, CONFIG.USER_RATE, profit);
 
-  return Response.json({ ok: true, token, wait: CONFIG.WAIT_MS });
+  // Create a shrtfly shortlink that carries this token as `sub` so shrtfly's
+  // postback (configured in their dashboard) reports it back for verification.
+  const adUrl = await createShortlink(CONFIG.AD_DESTINATION, token);
+
+  return Response.json({ ok: true, token, adUrl: adUrl || "", wait: CONFIG.WAIT_MS });
 }

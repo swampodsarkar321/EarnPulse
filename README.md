@@ -6,11 +6,18 @@ Vercel in one click. The shrtfly API key is kept **server-side**.
 
 ## Verification / anti-fraud flow
 A reward is NOT credited on click. Flow: click → server issues a task token and
-opens the real shrtfly ad (new tab) → user must wait `WAIT_MS` (12s) → click
-**Claim** → server credits balance + owner profit. Server also enforces a
-per-user `COOLDOWN_MS` (15s) and task `TASK_TTL_MS` (2 min). This stops bots /
-instant clicking so the owner only pays out when a real ad view happened
-(shrtfly counts the click → owner earns).
+creates a shrtfly shortlink carrying that token as `sub` → opens the real ad
+(new tab) → shrtfly fires a **postback** to `/api/shrtfly-callback?sub=...` when
+the ad is viewed → server credits balance + owner profit (server-verified). A
+client **Claim** button (after a `WAIT_MS` wait) is a fallback if postback is not
+configured/slow. Server also enforces per-user `COOLDOWN_MS` (15s) and task
+`TASK_TTL_MS` (2 min). This stops bots / instant clicking.
+
+### Enable shrtfly postback (recommended)
+In the shrtfly publisher dashboard → **Tools → Postback URL**, set:
+`https://<your-vercel-domain>/api/shrtfly-callback?sub={sub}`
+and make sure shortlinks are created with a `sub` (our `/api/earn` does this via
+the API `&sub=` param). Then credits happen only on real, network-confirmed views.
 
 ## Profit model (the important part)
 Every time a user "earns" by clicking an ad:
