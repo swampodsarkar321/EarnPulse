@@ -2,7 +2,7 @@ export default function Nav() {
   return (
     <header className="nav">
       <div className="container nav-inner">
-        <div className="logo">⚡ EarnPulse</div>
+        <div className="logo"><span className="mark">⚡</span> EarnPulse</div>
         <nav>
           <a href="/">Home</a>
           <a href="/dashboard">Dashboard</a>
