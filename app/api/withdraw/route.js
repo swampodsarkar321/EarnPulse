@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { addWithdrawal } from "../../../lib/store";
+import { addWithdrawal } from "../../lib/store";
 
 export const dynamic = "force-dynamic";
 
