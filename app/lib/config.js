@@ -6,4 +6,9 @@ export const CONFIG = {
   USER_RATE: 0.01,    // what the user gets credited
   // owner profit per click = NETWORK_RATE - USER_RATE = 0.01 (50% margin)
   ADMIN_KEY: "ep-admin-123", // change this! used for /admin
+
+  // Anti-fraud / verification
+  COOLDOWN_MS: 15000, // min gap between earns per user (server-enforced)
+  WAIT_MS: 12000,     // user must wait this long after opening ad before claiming
+  TASK_TTL_MS: 120000, // a task token expires if not claimed in 2 min
 };

@@ -4,6 +4,14 @@ A complete "watch ads / complete offers" site with **user accounts, balances,
 and a built-in owner profit margin**. Built with Next.js (React), deployable to
 Vercel in one click. The shrtfly API key is kept **server-side**.
 
+## Verification / anti-fraud flow
+A reward is NOT credited on click. Flow: click → server issues a task token and
+opens the real shrtfly ad (new tab) → user must wait `WAIT_MS` (12s) → click
+**Claim** → server credits balance + owner profit. Server also enforces a
+per-user `COOLDOWN_MS` (15s) and task `TASK_TTL_MS` (2 min). This stops bots /
+instant clicking so the owner only pays out when a real ad view happened
+(shrtfly counts the click → owner earns).
+
 ## Profit model (the important part)
 Every time a user "earns" by clicking an ad:
 - The **owner** is credited `NETWORK_RATE` (what shrtfly pays per click).

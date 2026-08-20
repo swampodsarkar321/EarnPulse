@@ -1,5 +1,6 @@
 import { db } from "./firebase";
 import { ref, get, set, child, update } from "firebase/database";
+import { CONFIG } from "./config";
 
 // All data lives in Firebase Realtime Database now (persists on Vercel).
 // Structure:
@@ -52,4 +53,58 @@ export async function withdraw(name, amount) {
   const o = await getOwner();
   await set(ref(db, "owner"), { ...o, paidOut: (o.paidOut || 0) + amount });
   return true;
+}
+
+// --- Verification / anti-fraud task flow ---
+// A reward is only credited after the user opens the ad AND claims with a
+// valid, unexpired, unclaimed task token. Prevents instant/bot crediting.
+
+export async function cooldownOk(name) {
+  const u = await getUser(name);
+  if (!u || !u.lastEarnAt) return true;
+  return Date.now() - u.lastEarnAt >= CONFIG.COOLDOWN_MS;
+}
+
+export async function createTask(name, userAmount, ownerProfit) {
+  const token =
+    typeof globalThis.crypto?.randomUUID === "function"
+      ? globalThis.crypto.randomUUID()
+      : Math.random().toString(36).slice(2) + Date.now().toString(36);
+  await set(ref(db, "tasks/" + token), {
+    name,
+    userAmount,
+    ownerProfit,
+    createdAt: Date.now(),
+    expiresAt: Date.now() + CONFIG.TASK_TTL_MS,
+    claimed: false,
+  });
+  // start cooldown now
+  const u = await getUser(name);
+  if (u) await set(child(ref(db, "users"), name), { ...u, lastEarnAt: Date.now() });
+  return token;
+}
+
+export async function claimTask(token, name) {
+  const snap = await get(ref(db, "tasks/" + token));
+  if (!snap.exists()) return { error: "invalid task" };
+  const t = snap.val();
+  if (t.claimed) return { error: "already claimed" };
+  if (t.name !== name) return { error: "mismatch" };
+  if (Date.now() > t.expiresAt) return { error: "expired" };
+
+  const u = await getUser(name);
+  if (!u) return { error: "user not found" };
+  const newBalance = (u.balance || 0) + t.userAmount;
+  await set(child(ref(db, "users"), name), { ...u, balance: newBalance });
+
+  const o = await getOwner();
+  const newOwner = {
+    profit: (o.profit || 0) + t.ownerProfit,
+    clicks: (o.clicks || 0) + 1,
+    paidOut: o.paidOut || 0,
+  };
+  await set(ref(db, "owner"), newOwner);
+
+  await set(ref(db, "tasks/" + token), { ...t, claimed: true, claimedAt: Date.now() });
+  return { ok: true, balance: newBalance, earned: t.userAmount, ownerProfit: t.ownerProfit };
 }
