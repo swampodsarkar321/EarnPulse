@@ -1,3 +1,4 @@
+"use client";
 import { AD_LINKS } from "../lib/links";
 import { CONFIG, fmtMoney } from "../lib/config";
 import { useApp } from "../components/AppShell";

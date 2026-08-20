@@ -1,5 +1,6 @@
 "use client";
 
+"use client";
 import { useState } from "react";
 import { useApp } from "../components/AppShell";
 import { fmtMoney, CONFIG } from "../lib/config";
