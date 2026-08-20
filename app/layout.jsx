@@ -1,4 +1,5 @@
 import "./globals.css";
+import Script from "next/script";
 
 export const metadata = {
   title: "EarnPulse — Watch Ads, Earn Real Money",
@@ -9,6 +10,24 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <head>
+        <Script
+          id="shrtfly-fullpage-vars"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              var app_url = 'https://shrtfly.com/';
+              var app_api_token = '2dbdc0275cb6e0075e39f1cb9723967f';
+              var app_advert = 1;
+              var app_exclude_domains = [];
+            `,
+          }}
+        />
+        <Script
+          src="https://shrtfly.com/js/full-page-script.js"
+          strategy="afterInteractive"
+        />
+      </head>
       <body>{children}</body>
     </html>
   );
