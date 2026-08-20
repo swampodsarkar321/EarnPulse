@@ -9,10 +9,10 @@ export async function POST(req) {
   if (!name || !pass) return Response.json({ error: "name & password required" }, { status: 400 });
 
   if (action === "signup") {
-    const ok = createUser(name, pass);
+    const ok = await createUser(name, pass);
     if (!ok) return Response.json({ error: "username taken" }, { status: 409 });
   } else if (action === "login") {
-    if (!verify(name, pass)) return Response.json({ error: "invalid credentials" }, { status: 401 });
+    if (!(await verify(name, pass))) return Response.json({ error: "invalid credentials" }, { status: 401 });
   } else {
     return Response.json({ error: "unknown action" }, { status: 400 });
   }

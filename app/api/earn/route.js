@@ -10,7 +10,7 @@ export async function POST(req) {
 
   // owner earns NETWORK_RATE, user gets USER_RATE, margin stays with owner
   const profit = CONFIG.NETWORK_RATE - CONFIG.USER_RATE;
-  const balance = addEarning(name, CONFIG.USER_RATE, profit);
+  const balance = await addEarning(name, CONFIG.USER_RATE, profit);
   if (balance === null) return Response.json({ error: "user not found" }, { status: 404 });
 
   return Response.json({

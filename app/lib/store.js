@@ -1,57 +1,55 @@
-import fs from "fs";
-import path from "path";
+import { db } from "./firebase";
+import { ref, get, set, child, update } from "firebase/database";
 
-const FILE = path.join(process.cwd(), "data.json");
+// All data lives in Firebase Realtime Database now (persists on Vercel).
+// Structure:
+//   users/<name> = { pass, balance }
+//   owner        = { profit, clicks, paidOut }
 
-function load() {
-  if (!fs.existsSync(FILE)) {
-    return { users: {}, owner: { profit: 0, clicks: 0, paidOut: 0 } };
-  }
-  return JSON.parse(fs.readFileSync(FILE, "utf8"));
+export async function getUser(name) {
+  const snap = await get(child(ref(db, "users"), name));
+  return snap.exists() ? snap.val() : null;
 }
 
-function save(d) {
-  fs.writeFileSync(FILE, JSON.stringify(d, null, 2));
-}
-
-export function getUser(name) {
-  const d = load();
-  return d.users[name];
-}
-
-export function createUser(name, pass) {
-  const d = load();
-  if (d.users[name]) return false;
-  d.users[name] = { pass, balance: 0 };
-  save(d);
+export async function createUser(name, pass) {
+  const snap = await get(child(ref(db, "users"), name));
+  if (snap.exists()) return false;
+  await set(child(ref(db, "users"), name), { pass, balance: 0 });
   return true;
 }
 
-export function verify(name, pass) {
-  const u = getUser(name);
-  return u && u.pass === pass;
+export async function verify(name, pass) {
+  const u = await getUser(name);
+  return !!(u && u.pass === pass);
 }
 
-export function addEarning(name, userAmount, ownerProfit) {
-  const d = load();
- if (!d.users[name]) return null;
-  d.users[name].balance = (d.users[name].balance || 0) + userAmount;
-  d.owner.profit = (d.owner.profit || 0) + ownerProfit;
-  d.owner.clicks = (d.owner.clicks || 0) + 1;
-  save(d);
-  return d.users[name].balance;
+export async function getOwner() {
+  const snap = await get(ref(db, "owner"));
+  return snap.exists() ? snap.val() : { profit: 0, clicks: 0, paidOut: 0 };
 }
 
-export function withdraw(name, amount) {
-  const d = load();
-  const u = d.users[name];
+export async function addEarning(name, userAmount, ownerProfit) {
+  const u = await getUser(name);
+  if (!u) return null;
+  const newBalance = (u.balance || 0) + userAmount;
+  await set(child(ref(db, "users"), name), { ...u, balance: newBalance });
+
+  const o = await getOwner();
+  const newOwner = {
+    profit: (o.profit || 0) + ownerProfit,
+    clicks: (o.clicks || 0) + 1,
+    paidOut: o.paidOut || 0,
+  };
+  await set(ref(db, "owner"), newOwner);
+  return newBalance;
+}
+
+export async function withdraw(name, amount) {
+  const u = await getUser(name);
   if (!u || u.balance < amount) return false;
-  u.balance -= amount;
-  d.owner.paidOut = (d.owner.paidOut || 0) + amount;
-  save(d);
-  return true;
-}
+  await set(child(ref(db, "users"), name), { ...u, balance: u.balance - amount });
 
-export function getOwner() {
-  return load().owner;
+  const o = await getOwner();
+  await set(ref(db, "owner"), { ...o, paidOut: (o.paidOut || 0) + amount });
+  return true;
 }

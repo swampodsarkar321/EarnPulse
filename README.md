@@ -40,10 +40,29 @@ app/
 2. Settings → Environment Variables → add `SHRTFLY_API_KEY`.
 3. Redeploy.
 
-## ⚠️ Production notes
-- `app/lib/store.js` uses a local `data.json` file for demo. On Vercel's
-  serverless FS this is **not persistent** — swap it for Vercel KV / a database
-  (Postgres, Upstash Redis) before going live with real users.
+## Storage: Firebase Realtime Database
+All user/balance/owner-profit data is stored in **Firebase Realtime Database**
+(see `app/lib/firebase.js` + `app/lib/store.js`). It persists on Vercel (no
+ephemeral file system issues).
+
+Setup:
+1. Firebase console → Realtime Database → create DB (region `asia-southeast1`).
+2. The web config is already in `app/lib/firebase.js`.
+3. **Lock down the database rules** (Rules tab) before real use, e.g.:
+```
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "users": { ".read": false, ".write": false },
+    "owner": { ".read": false, ".write": false }
+  }
+}
+```
+⚠️ The web config's `apiKey` is public (normal for Firebase web). The app
+currently writes via the web SDK, so while testing you may need rules open
+(`".read": true, ".write": true`). For production, switch `app/lib/store.js`
+to **Firebase Admin SDK** with a service account so the DB stays fully locked.
 - Change `ADMIN_KEY` in `app/lib/config.js`.
 - Do NOT use Google AdSense on incentivized sites (banned); use shrtfly /
   CPA networks. Regenerate your shrtfly key after sharing it in chat.

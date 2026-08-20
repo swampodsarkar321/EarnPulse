@@ -8,7 +8,7 @@ export async function GET(req) {
   if (searchParams.get("key") !== CONFIG.ADMIN_KEY) {
     return Response.json({ error: "unauthorized" }, { status: 401 });
   }
-  const o = getOwner();
+  const o = await getOwner();
   const marginPerClick = CONFIG.NETWORK_RATE - CONFIG.USER_RATE;
   return Response.json({
     profit: o.profit,
