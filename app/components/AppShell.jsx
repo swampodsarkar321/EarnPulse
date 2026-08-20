@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, createContext, useContext } from "react";
+import { useEffect, useState, createContext, useContext, useCallback } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { fmtMoney } from "../lib/config";
@@ -11,6 +11,13 @@ export function useApp() {
 
 function Bolt() {
   return <svg viewBox="0 0 24 24"><path d="M13 2 3 14h8l-1 8 11-13h-8z" /></svg>;
+}
+function Coin() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="9" /><path d="M12 7v10M9.5 9.2c0-1.2 1.1-2 2.5-2s2.5.9 2.5 2-1.1 1.8-2.5 1.8-2.5.8-2.5 2 1.1 2 2.5 2 2.5-.8 2.5-2" />
+    </svg>
+  );
 }
 function HomeIcon() {
   return (
@@ -53,6 +60,32 @@ const TABS = [
   { href: "/profile", label: "Profile", icon: <UserIcon /> },
 ];
 
+export function ToastProvider({ children }) {
+  const [toasts, setToasts] = useState([]);
+  const toast = useCallback((msg, type = "ok") => {
+    const id = Math.random().toString(36).slice(2);
+    setToasts((t) => [...t, { id, msg, type }]);
+    setTimeout(() => setToasts((t) => t.filter((x) => x.id !== id)), 2600);
+  }, []);
+  return (
+    <ToastCtx.Provider value={toast}>
+      {children}
+      <div className="toast-wrap">
+        {toasts.map((t) => (
+          <div key={t.id} className={"toast " + t.type}>
+            <span className="ti">{t.type === "ok" ? "✓" : t.type === "err" ? "!" : "•"}</span>
+            <span>{t.msg}</span>
+          </div>
+        ))}
+      </div>
+    </ToastCtx.Provider>
+  );
+}
+const ToastCtx = createContext(null);
+export function useToast() {
+  return useContext(ToastCtx);
+}
+
 export default function AppShell({ children }) {
   const path = usePathname();
   const [me, setMe] = useState(null);
@@ -76,29 +109,35 @@ export default function AppShell({ children }) {
 
   return (
     <AppContext.Provider value={{ me, setMe, refresh, lb }}>
-      <div className="app">
-        <header className="appbar">
-          <div className="appbar-title"><Bolt /> EarnPulse</div>
-          {loggedIn ? (
-            <Link href="/wallet" className="appbar-bal">${fmtMoney(me.balance)}</Link>
-          ) : (
-            <Link href="/login" className="appbar-bal ghost">Login</Link>
+      <ToastProvider>
+        <div className="app">
+          <header className="appbar">
+            <div className="appbar-title">
+              <span className="logo-chip"><Bolt /></span> EarnPulse
+            </div>
+            {loggedIn ? (
+              <Link href="/wallet" className="appbar-bal"><Coin />${fmtMoney(me.balance)}</Link>
+            ) : (
+              <Link href="/login" className="appbar-bal ghost">Login</Link>
+            )}
+          </header>
+
+          <main className="appbody">
+            <div className="screen" key={path}>{children}</div>
+          </main>
+
+          {loggedIn && (
+            <nav className="tabbar">
+              {TABS.map((t) => (
+                <Link key={t.href} href={t.href} className={"tab" + (active === t.href ? " active" : "")}>
+                  <span className="tab-ic">{t.icon}</span>
+                  <span>{t.label}</span>
+                </Link>
+              ))}
+            </nav>
           )}
-        </header>
-
-        <main className="appbody">{children}</main>
-
-        {loggedIn && (
-          <nav className="tabbar">
-            {TABS.map((t) => (
-              <Link key={t.href} href={t.href} className={"tab" + (active === t.href ? " active" : "")}>
-                <span className="tab-ic">{t.icon}</span>
-                <span className="tab-lb">{t.label}</span>
-              </Link>
-            ))}
-          </nav>
-        )}
-      </div>
+        </div>
+      </ToastProvider>
     </AppContext.Provider>
   );
 }

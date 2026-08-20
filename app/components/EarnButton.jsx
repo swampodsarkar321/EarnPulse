@@ -20,12 +20,10 @@ export default function EarnButton({ label, adUrl }) {
       setBusy(false);
       return;
     }
-    // open the real ad (per-task shortlink from server, or fallback prop)
     const open = d.adUrl || adUrl;
     if (open) window.open(open, "_blank", "noopener");
     setToken(d.token);
 
-    // countdown before claim is allowed (proves the ad was opened/watched)
     let left = Math.ceil(d.wait / 1000);
     setCount(left);
     setCanClaim(false);
@@ -60,25 +58,20 @@ export default function EarnButton({ label, adUrl }) {
 
   return (
     <>
-      <button
-        className="earn-btn"
-        onClick={start}
-        disabled={busy || !!token}
-        style={{ border: "none", width: "100%", cursor: "pointer" }}
-      >
+      <button className="btn btn-block" onClick={start} disabled={busy || !!token}>
         {label}
       </button>
       {token && (
         <button
-          className="btn"
+          className="btn btn-green btn-block"
           onClick={claim}
           disabled={!canClaim || busy}
-          style={{ width: "100%", marginTop: 8 }}
+          style={{ marginTop: 8 }}
         >
           {canClaim ? "Claim $0.01" : `Wait ${count}s...`}
         </button>
       )}
-      {msg && <p className="muted" style={{ marginTop: 8 }}>{msg}</p>}
+      {msg && <p className="hint" style={{ marginTop: 8, textAlign: "center" }}>{msg}</p>}
     </>
   );
 }

@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import { fmtMoney } from "../lib/config";
 
@@ -17,27 +16,41 @@ export default function Admin() {
   }
 
   return (
-    <section className="tool">
-      <h2>Owner Panel — Profit</h2>
-      <div className="form-row" style={{ justifyContent: "center" }}>
-        <div><label>Admin Key</label><input value={key} onChange={(e) => setKey(e.target.value)} placeholder="admin key" /></div>
-        <div><label>&nbsp;</label><button className="btn" onClick={load}>Load Stats</button></div>
+    <section className="tool" style={{ marginTop: 10 }}>
+      <div className="section-head" style={{ textAlign: "center" }}>
+        <span className="eyebrow">Owner</span>
+        <h2>Profit Dashboard</h2>
       </div>
-      {err && <p className="muted" style={{ color: "#ff6b6b" }}>{err}</p>}
+
+      <div className="card">
+        <div className="field">
+          <label>Admin key</label>
+          <input value={key} onChange={(e) => setKey(e.target.value)} placeholder="enter admin key" type="password" />
+        </div>
+        <button className="btn btn-block" onClick={load}>Load stats</button>
+        {err && <p style={{ color: "var(--red)", fontSize: 13.5, marginTop: 12 }}>{err}</p>}
+      </div>
 
       {d && (
-        <div className="wallet" style={{ marginTop: 24 }}>
-          <div className="bal"><h3>Net Profit</h3><div className="amt">${fmtMoney(d.netProfit || 0)}</div></div>
-          <div className="bal" style={{ background: "linear-gradient(135deg,#00b894,#0984e3)" }}>
-            <h3>Total Clicks</h3><div className="amt">{d.clicks}</div></div>
-          <div className="bal" style={{ background: "linear-gradient(135deg,#e17055,#d63031)" }}>
-            <h3>Profit / Click</h3><div className="amt">${fmtMoney(d.marginPerClick || 0)}</div></div>
-        </div>
-      )}
-      {d && (
-        <p className="muted" style={{ marginTop: 12 }}>
-          Paid out to users: ${fmtMoney(d.paidOut || 0)} · Gross profit: ${fmtMoney(d.profit || 0)}
-        </p>
+        <>
+          <div className="stats" style={{ marginTop: 18 }}>
+            <div className="stat accent">
+              <div className="k">Net profit</div>
+              <div className="v">${fmtMoney(d.netProfit || 0)}</div>
+            </div>
+            <div className="stat green">
+              <div className="k">Total clicks</div>
+              <div className="v">{d.clicks}</div>
+            </div>
+          </div>
+          <div className="card">
+            <ul className="list">
+              <li><span>Profit / click</span><span className="rec-amt">${fmtMoney(d.marginPerClick || 0)}</span></li>
+              <li><span>Gross profit</span><span className="rec-amt">${fmtMoney(d.profit || 0)}</span></li>
+              <li><span>Paid out to users</span><span className="rec-amt minus">${fmtMoney(d.paidOut || 0)}</span></li>
+            </ul>
+          </div>
+        </>
       )}
     </section>
   );

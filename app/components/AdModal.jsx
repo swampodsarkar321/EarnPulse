@@ -1,8 +1,10 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { fmtMoney, CONFIG } from "../lib/config";
 
 const CD = CONFIG.AD_REPLAY_COOLDOWN_MS || 60000;
+const R = 36;
+const C = 2 * Math.PI * R;
 function today() {
   return new Date().toISOString().slice(0, 10);
 }
@@ -12,9 +14,11 @@ export default function AdModal({ ad }) {
   const [stage, setStage] = useState("loading"); // loading|viewing|done|success|error
   const [token, setToken] = useState(null);
   const [count, setCount] = useState(0);
+  const [total, setTotal] = useState(12);
   const [msg, setMsg] = useState("");
   const [cooldownUntil, setCooldownUntil] = useState(0);
   const [dailyDone, setDailyDone] = useState(false);
+  const ivRef = useRef(null);
 
   const id = ad.id || ad.adUrl;
   const cdKey = "ep_ad_cd_" + id;
@@ -33,13 +37,11 @@ export default function AdModal({ ad }) {
         }
       }, 1000);
     }
-    return () => iv && clearInterval(iv);
+    return () => { clearInterval(iv); clearInterval(ivRef.current); };
   }, [cdKey, dayKey]);
 
-  const cooling = cooldownUntil > Date.now();
-  const secsLeft = cooling ? Math.ceil((cooldownUntil - Date.now()) / 1000) : 0;
-
   function close() {
+    clearInterval(ivRef.current);
     setOpen(false);
     setStage("loading");
     setToken(null);
@@ -72,16 +74,21 @@ export default function AdModal({ ad }) {
     if (openUrl) window.open(openUrl, "_blank", "noopener");
     setToken(d.token);
 
-    let left = Math.ceil(d.wait || 12);
-    setCount(left);
+    const left0 = Math.ceil(d.wait || 12);
+    setTotal(left0);
+    setCount(left0);
     setStage("viewing");
-    const iv = setInterval(() => {
-      left -= 1;
-      setCount(left);
-      if (left <= 0) {
-        clearInterval(iv);
-        setStage("done");
-      }
+    clearInterval(ivRef.current);
+    ivRef.current = setInterval(() => {
+      setCount((c) => {
+        const n = c - 1;
+        if (n <= 0) {
+          clearInterval(ivRef.current);
+          setStage("done");
+          return 0;
+        }
+        return n;
+      });
     }, 1000);
   }
 
@@ -102,6 +109,11 @@ export default function AdModal({ ad }) {
     }
     setStage("success");
   }
+
+  const cooling = cooldownUntil > Date.now();
+  const secsLeft = cooling ? Math.ceil((cooldownUntil - Date.now()) / 1000) : 0;
+  const progress = total ? (total - count) / total : 0;
+  const offset = C * (1 - progress);
 
   const disabled = cooling || dailyDone;
   const label = dailyDone
@@ -130,36 +142,45 @@ export default function AdModal({ ad }) {
             </div>
 
             <div className="view-frame">
-              {stage === "loading" && <p className="muted">Preparing your ad…</p>}
+              {stage === "loading" && (
+                <>
+                  <div className="spinner" />
+                  <p className="muted">Preparing your ad…</p>
+                </>
+              )}
 
               {stage === "viewing" && (
                 <>
-                  <div className="spinner" />
-                  <p>The ad opened in a <b>new tab</b>. Please view it.</p>
-                  <p className="muted small">Reward unlocks in <b>{count}s</b> — keep this tab open.</p>
+                  <div className="ring-wrap">
+                    <svg className="ring" viewBox="0 0 84 84">
+                      <circle className="track" cx="42" cy="42" r={R} />
+                      <circle className="bar" cx="42" cy="42" r={R} strokeDasharray={C} strokeDashoffset={offset} />
+                    </svg>
+                    <span className="pct">{count}s</span>
+                  </div>
+                  <p className="big">Ad opened in a new tab</p>
+                  <p className="muted small">Keep this tab open · reward unlocks in <b>{count}s</b></p>
                 </>
               )}
 
               {stage === "done" && (
-                <p className="ok">✅ Ad viewed! Claim your reward below.</p>
+                <>
+                  <div className="empty" style={{ padding: "8px 0" }}>
+                    <div className="e-ic" style={{ background: "rgba(62,207,142,.16)", color: "var(--green)" }}>✅</div>
+                    <p className="big" style={{ color: "var(--green)" }}>Ad viewed!</p>
+                    <p className="muted small">Claim your reward below.</p>
+                  </div>
+                </>
               )}
 
               {stage === "error" && <p className="err">⚠️ {msg}</p>}
               {stage === "success" && <p className="ok">✅ {msg}</p>}
             </div>
 
-            {stage === "viewing" && (
-              <button className="btn" disabled>Please wait {count}s…</button>
-            )}
-            {stage === "done" && (
-              <button className="btn" onClick={claim}>Claim +${fmtMoney(ad.amount)}</button>
-            )}
-            {stage === "success" && (
-              <button className="btn btn-ghost" onClick={close}>Close</button>
-            )}
-            {stage === "error" && (
-              <a href="/login" className="btn">Login to earn</a>
-            )}
+            {stage === "viewing" && <button className="btn btn-block" disabled>Please wait {count}s…</button>}
+            {stage === "done" && <button className="btn btn-green btn-block" onClick={claim}>Claim +${fmtMoney(ad.amount)}</button>}
+            {stage === "success" && <button className="btn btn-ghost btn-block" onClick={close}>Close</button>}
+            {stage === "error" && <a href="/login" className="btn btn-block">Login to earn</a>}
           </div>
         </div>
       )}

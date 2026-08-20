@@ -18,9 +18,10 @@ export default function Watch() {
   if (!me.loggedIn) {
     return (
       <section className="tool">
+        <span className="logo-chip"><svg viewBox="0 0 24 24"><path d="M13 2 3 14h8l-1 8 11-13h-8z" fill="#fff" /></svg></span>
         <h2>Please login</h2>
         <p className="muted">You must be logged in to watch ads and earn.</p>
-        <a href="/login" className="btn btn-lg">Login</a>
+        <a href="/login" className="btn btn-lg" style={{ marginTop: 18 }}>Login</a>
       </section>
     );
   }
@@ -30,7 +31,7 @@ export default function Watch() {
       <div className="section-head">
         <span className="eyebrow">Watch ads</span>
         <h2>Earn by watching ads</h2>
-        <p className="muted">Open the sponsor ad in a new tab, view it, wait, then claim. Limit 20 views per ad per day.</p>
+        <p className="muted">Open the sponsor ad in a new tab, view it, wait, then claim. Limit {CONFIG.AD_DAILY_LIMIT} views per ad per day.</p>
       </div>
 
       <div className="ad-list">
@@ -46,9 +47,10 @@ export default function Watch() {
           </div>
         ))}
       </div>
-      <p className="muted" style={{ marginTop: 14, textAlign: "center" }}>
-        New ads are added daily. The more you watch, the more you earn.
-      </p>
+
+      <div className="card" style={{ marginTop: 16 }}>
+        <p className="hint">💡 Tip: open each ad in a new tab and let it load fully. Rewards are credited after the timer ends. New ads are added daily.</p>
+      </div>
     </>
   );
 }

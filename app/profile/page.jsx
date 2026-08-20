@@ -1,6 +1,4 @@
 "use client";
-
-"use client";
 import { useApp } from "../components/AppShell";
 import { fmtMoney, CONFIG } from "../lib/config";
 
@@ -17,58 +15,77 @@ function ago(ts) {
 export default function Profile() {
   const { me } = useApp();
 
-  if (!me) return <p className="muted">Loading…</p>;
+  if (!me) return (
+    <>
+      <div className="sk-card sk" />
+      <div className="sk-card sk" />
+    </>
+  );
 
   if (!me.loggedIn) {
     return (
       <section className="tool">
+        <span className="logo-chip"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="#fff"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0" fill="#fff"/></svg></span>
         <h2>Please login</h2>
         <p className="muted">You must be logged in to view your profile.</p>
-        <a href="/login" className="btn btn-lg">Login</a>
+        <a href="/login" className="btn btn-lg" style={{ marginTop: 18 }}>Login</a>
       </section>
     );
   }
 
+  const initial = (me.name || "?").trim().charAt(0).toUpperCase();
+
   return (
     <>
-      <div className="wallet">
-        <div className="bal accent">
-          <h3>{me.name}</h3>
-          <div className="amt">${fmtMoney(me.balance)}</div>
-        </div>
-        <div className="bal">
-          <h3>Earn / Click</h3>
-          <div className="amt">${fmtMoney(CONFIG.USER_RATE)}</div>
+      <div className="hero" style={{ display: "flex", alignItems: "center", gap: 16 }}>
+        <div className="ava" style={{ width: 60, height: 60, fontSize: 24, borderRadius: 18 }}>{initial}</div>
+        <div>
+          <div className="label">{me.name}</div>
+          <div className="balance" style={{ fontSize: 28 }}><span className="cur">$</span>{fmtMoney(me.balance)}</div>
         </div>
       </div>
 
-      <div className="panel">
-        <h3>Account</h3>
-        <ul className="recent">
-          <li><span>👤 Username</span><span className="rec-amt" style={{ color: "var(--text)" }}>{me.name}</span></li>
-          <li><span>💰 Balance</span><span className="rec-amt">${fmtMoney(me.balance)}</span></li>
-          <li><span>⚡ Rate</span><span className="muted">${fmtMoney(CONFIG.USER_RATE)} / view</span></li>
+      <div className="stats">
+        <div className="stat accent">
+          <div className="k">Per view</div>
+          <div className="v">${fmtMoney(CONFIG.USER_RATE)}</div>
+        </div>
+        <div className="stat green">
+          <div className="k">Ads watched</div>
+          <div className="v">{me.recent ? me.recent.length : 0}</div>
+        </div>
+      </div>
+
+      <div className="card">
+        <h3>👤 Account</h3>
+        <ul className="list">
+          <li><span>Username</span><span className="rec-amt neutral">{me.name}</span></li>
+          <li><span>Balance</span><span className="rec-amt">${fmtMoney(me.balance)}</span></li>
+          <li><span>Rate</span><span className="muted">{fmtMoney(CONFIG.USER_RATE)} / view</span></li>
         </ul>
-        <div style={{ marginTop: 16, display: "flex", gap: 12, flexWrap: "wrap" }}>
+        <div className="btn-row" style={{ marginTop: 16 }}>
           <a href="/watch" className="btn btn-sm">Watch Ads</a>
           <a href="/wallet" className="btn btn-sm btn-ghost">Wallet</a>
         </div>
       </div>
 
-      <div className="panel">
-        <h3>Recent Activity</h3>
+      <div className="card">
+        <h3>🎬 Recent activity</h3>
         {me.recent && me.recent.length > 0 ? (
-          <ul className="recent">
+          <ul className="list">
             {me.recent.map((r, i) => (
               <li key={i}>
                 <span>🎬 Watched ad</span>
+                <span className="muted small">{ago(r.at)}</span>
                 <span className="rec-amt">+${fmtMoney(r.amount || 0)}</span>
-                <span className="muted">{ago(r.at)}</span>
               </li>
             ))}
           </ul>
         ) : (
-          <p className="muted">No activity yet. Watch your first ad to get started.</p>
+          <div className="empty">
+            <div className="e-ic">🎬</div>
+            <p>No activity yet. Watch your first ad to get started.</p>
+          </div>
         )}
       </div>
     </>
