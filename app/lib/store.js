@@ -61,6 +61,32 @@ export async function withdraw(name, amount) {
   return true;
 }
 
+// Withdrawal request (pending admin approval). Reserves funds by deducting
+// balance now; the request is recorded under users/<name>/withdrawals.
+export async function addWithdrawal(name, method, amount) {
+  const u = await getUser(name);
+  if (!u) return { error: "user not found" };
+  if ((u.balance || 0) < amount) return { error: "insufficient balance" };
+  const newBalance = u.balance - amount;
+  await set(child(ref(db, "users"), name), { ...u, balance: newBalance });
+  await push(ref(db, `users/${name}/withdrawals`), {
+    method,
+    amount,
+    at: Date.now(),
+    status: "pending",
+  });
+  return { ok: true, balance: newBalance };
+}
+
+export async function getWithdrawals(name) {
+  const snap = await get(ref(db, `users/${name}/withdrawals`));
+  if (!snap.exists()) return [];
+  return Object.values(snap.val())
+    .sort((a, b) => b.at - a.at)
+    .slice(0, 6)
+    .map((w) => ({ method: w.method, amount: w.amount, at: w.at, status: w.status }));
+}
+
 // --- Verification / anti-fraud task flow ---
 // A reward is only credited after the user opens the ad AND claims with a
 // valid, unexpired, unclaimed task token. Prevents instant/bot crediting.

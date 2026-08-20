@@ -24,20 +24,20 @@ export default function Footer() {
             <ul>
               <li><a href="/">Home</a></li>
               <li><a href="/dashboard">Dashboard</a></li>
-              <li><a href="/#earn">Watch Ads</a></li>
-              <li><a href="/dashboard">Wallet</a></li>
-              <li><a href="/dashboard">Profile</a></li>
+              <li><a href="/watch">Watch Ads</a></li>
+              <li><a href="/wallet">Wallet</a></li>
+              <li><a href="/profile">Profile</a></li>
             </ul>
           </div>
 
           <div>
             <h4>Company</h4>
             <ul>
-              <li><a href="/#about">About us</a></li>
-              <li><a href="/#why">Why EarnPulse</a></li>
-              <li><a href="/#faq">FAQ</a></li>
-              <li><a href="/#support">Support</a></li>
-              <li><a href="/#contact">Contact</a></li>
+              <li><a href="/watch">Watch Ads</a></li>
+              <li><a href="/wallet">Wallet</a></li>
+              <li><a href="/profile">Profile</a></li>
+              <li><a href="/dashboard">Leaderboard</a></li>
+              <li><a href="/dashboard">Dashboard</a></li>
             </ul>
           </div>
 

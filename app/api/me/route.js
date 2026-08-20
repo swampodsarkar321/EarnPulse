@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { getUser } from "../../lib/store";
+import { getUser, getWithdrawals } from "../../lib/store";
 
 export const dynamic = "force-dynamic";
 
@@ -18,10 +18,13 @@ export async function GET() {
       .map((h) => ({ amount: h.amount, at: h.at }));
   }
 
+  const withdrawals = await getWithdrawals(name);
+
   return Response.json({
     loggedIn: true,
     name,
     balance: u.balance || 0,
     recent,
+    withdrawals,
   });
 }
