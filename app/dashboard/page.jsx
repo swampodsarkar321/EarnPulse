@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Nav from "../components/Nav";
 import Footer from "../components/Footer";
 import EarnButton from "../components/EarnButton";
-import { AD_LINKS } from "../lib/ads";
+import { AD_LINKS } from "../lib/links";
 
 export default function Dashboard() {
   const [me, setMe] = useState(null);
