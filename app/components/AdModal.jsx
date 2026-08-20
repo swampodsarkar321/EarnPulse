@@ -1,6 +1,8 @@
 "use client";
-import { useState } from "react";
-import { fmtMoney } from "../lib/config";
+import { useState, useEffect } from "react";
+import { fmtMoney, CONFIG } from "../lib/config";
+
+const CD = CONFIG.AD_REPLAY_COOLDOWN_MS || 60000;
 
 export default function AdModal({ ad }) {
   const [open, setOpen] = useState(false);
@@ -8,6 +10,27 @@ export default function AdModal({ ad }) {
   const [token, setToken] = useState(null);
   const [count, setCount] = useState(0);
   const [msg, setMsg] = useState("");
+  const [cooldownUntil, setCooldownUntil] = useState(0);
+
+  const key = "ep_ad_cd_" + ad.adUrl;
+
+  useEffect(() => {
+    let iv;
+    const until = Number(localStorage.getItem(key) || 0);
+    setCooldownUntil(until);
+    if (until > Date.now()) {
+      iv = setInterval(() => {
+        if (Date.now() >= until) {
+          setCooldownUntil(0);
+          clearInterval(iv);
+        }
+      }, 1000);
+    }
+    return () => iv && clearInterval(iv);
+  }, [key]);
+
+  const cooling = cooldownUntil > Date.now();
+  const secsLeft = cooling ? Math.ceil((cooldownUntil - Date.now()) / 1000) : 0;
 
   function close() {
     setOpen(false);
@@ -16,6 +39,7 @@ export default function AdModal({ ad }) {
   }
 
   async function start() {
+    if (cooling) return;
     setOpen(true);
     setStage("loading");
     setMsg("");
@@ -30,7 +54,7 @@ export default function AdModal({ ad }) {
     if (openUrl) window.open(openUrl, "_blank", "noopener");
     setToken(d.token);
 
-    let left = Math.ceil((d.wait || 12));
+    let left = Math.ceil(d.wait || 12);
     setCount(left);
     setStage("viewing");
     const iv = setInterval(() => {
@@ -50,14 +74,22 @@ export default function AdModal({ ad }) {
       body: JSON.stringify({ token }),
     });
     const d = await r.json();
-    if (d.ok) setMsg(`Reward claimed! Balance: $${fmtMoney(d.balance)}`);
-    else setMsg(d.error || "Could not claim");
+    if (d.ok) {
+      const until = Date.now() + CD;
+      localStorage.setItem(key, until);
+      setCooldownUntil(until);
+      setMsg(`Reward claimed! Balance: $${fmtMoney(d.balance)}`);
+    } else {
+      setMsg(d.error || "Could not claim");
+    }
     setStage("success");
   }
 
   return (
     <>
-      <button className="ad-watch" onClick={start}>▶ Watch</button>
+      <button className="ad-watch" disabled={cooling} onClick={start}>
+        {cooling ? `Available in ${secsLeft}s` : "▶ Watch"}
+      </button>
 
       {open && (
         <div className="modal-overlay" onClick={close}>
