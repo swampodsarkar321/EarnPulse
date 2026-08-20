@@ -4,7 +4,7 @@ import { createUser, verify } from "../../lib/store";
 export const dynamic = "force-dynamic";
 
 export async function POST(req) {
-  const { action, name, pass } = await req.json();
+  let { action, name, pass } = await req.json();
   name = (name || "").trim();
   if (!name || !pass) return Response.json({ error: "name & password required" }, { status: 400 });
 
