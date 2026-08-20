@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { fmtMoney } from "../lib/config";
 
 export default function AdModal({ ad }) {
   const [open, setOpen] = useState(false);
@@ -49,7 +50,7 @@ export default function AdModal({ ad }) {
       body: JSON.stringify({ token }),
     });
     const d = await r.json();
-    if (d.ok) setMsg(`Reward claimed! Balance: $${d.balance.toFixed(2)}`);
+    if (d.ok) setMsg(`Reward claimed! Balance: $${fmtMoney(d.balance)}`);
     else setMsg(d.error || "Could not claim");
     setStage("success");
   }
@@ -68,7 +69,7 @@ export default function AdModal({ ad }) {
                 <b>{ad.title}</b>
                 <span className="muted">{ad.advertiser}</span>
               </div>
-              <div className="ad-reward">+${ad.amount.toFixed(2)}</div>
+              <div className="ad-reward">+${fmtMoney(ad.amount)}</div>
             </div>
 
             <div className="view-frame">
@@ -94,7 +95,7 @@ export default function AdModal({ ad }) {
               <button className="btn" disabled>Please wait {count}s…</button>
             )}
             {stage === "done" && (
-              <button className="btn" onClick={claim}>Claim +${ad.amount.toFixed(2)}</button>
+              <button className="btn" onClick={claim}>Claim +${fmtMoney(ad.amount)}</button>
             )}
             {stage === "success" && (
               <button className="btn btn-ghost" onClick={close}>Close</button>

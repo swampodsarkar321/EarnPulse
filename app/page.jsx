@@ -3,11 +3,12 @@ import Footer from "./components/Footer";
 import MemberPanel from "./components/MemberPanel";
 import AdModal from "./components/AdModal";
 import { AD_LINKS } from "./lib/links";
+import { CONFIG, fmtMoney } from "./lib/config";
 
 const ADS = [
-  { icon: "🛒", title: "Top online store deal", advertiser: "Sponsor · Mainstream", amount: 0.01, adUrl: AD_LINKS[0] },
-  { icon: "🎮", title: "New mobile game launch", advertiser: "Sponsor · Mainstream", amount: 0.01, adUrl: AD_LINKS[1] },
-  { icon: "📱", title: "Win a gift card", advertiser: "Sponsor · Mainstream", amount: 0.01, adUrl: AD_LINKS[2] },
+  { icon: "🛒", title: "Top online store deal", advertiser: "Sponsor · Mainstream", amount: CONFIG.USER_RATE, adUrl: AD_LINKS[0] },
+  { icon: "🎮", title: "New mobile game release", advertiser: "Sponsor · Mainstream", amount: CONFIG.USER_RATE, adUrl: AD_LINKS[1] },
+  { icon: "📱", title: "Win a gift card", advertiser: "Sponsor · Mainstream", amount: CONFIG.USER_RATE, adUrl: AD_LINKS[2] },
 ];
 
 export default function Home() {
@@ -118,7 +119,7 @@ export default function Home() {
                     <b>{ad.title}</b>
                     <span className="muted">{ad.advertiser}</span>
                   </div>
-                  <div className="ad-reward">+${ad.amount.toFixed(2)}</div>
+                  <div className="ad-reward">+${fmtMoney(ad.amount)}</div>
                   <AdModal ad={ad} />
                 </div>
               ))}

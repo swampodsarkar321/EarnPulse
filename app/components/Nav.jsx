@@ -2,7 +2,7 @@ export default function Nav() {
   return (
     <header className="nav">
       <div className="announce">
-        🎉 Earn <b>$0.01</b> for every ad you watch · Instant payouts via bKash, Nagad &amp; USDT
+        🎉 Earn <b>$0.0005</b> for every ad you watch · Instant payouts via bKash, Nagad &amp; USDT
       </div>
       <div className="container nav-inner">
         <div className="logo"><span className="mark">⚡</span> EarnPulse</div>

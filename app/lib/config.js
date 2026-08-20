@@ -1,7 +1,7 @@
 // Profit / payout configuration.
 // 60 / 40 split: owner keeps OWNER_SHARE, user gets USER_SHARE of network payout.
 export const CONFIG = {
-  USER_RATE: 0.01,    // what the user is credited per ad view (40% share)
+  USER_RATE: 0.0005,  // what the user is credited per ad view (40% share)
   OWNER_SHARE: 0.6,   // owner keeps 60%
   USER_SHARE: 0.4,    // user gets 40%
   // owner profit per click = USER_RATE * (OWNER_SHARE / USER_SHARE)
@@ -15,3 +15,10 @@ export const CONFIG = {
   // Destination the shrtfly shortlink points to (change to a real offer page)
   AD_DESTINATION: "https://example.com/page",
 };
+
+// Format money so small rewards (e.g. $0.0005) still show correctly.
+export function fmtMoney(n) {
+  const v = Number(n) || 0;
+  if (v === 0) return "0.00";
+  return v >= 0.01 ? v.toFixed(2) : v.toFixed(v >= 0.001 ? 4 : 5);
+}

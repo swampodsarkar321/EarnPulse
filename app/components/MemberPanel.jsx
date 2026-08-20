@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { fmtMoney } from "../lib/config";
 
 function ago(ts) {
   const s = Math.floor((Date.now() - ts) / 1000);
@@ -45,7 +46,7 @@ export default function MemberPanel() {
         <div className="member-grid">
           <div className="member-balance">
             <span className="eyebrow" style={{ color: "var(--text)", opacity: .8 }}>Available balance</span>
-            <div className="amt">${(me.balance || 0).toFixed(2)}</div>
+            <div className="amt">${fmtMoney(me.balance || 0)}</div>
             <a href="/dashboard" className="btn btn-sm" style={{ marginTop: 14 }}>Withdraw</a>
           </div>
 
@@ -73,7 +74,7 @@ export default function MemberPanel() {
               {me.recent.map((r, i) => (
                 <li key={i}>
                   <span>🎬 Watched ad</span>
-                  <span className="rec-amt">+${(r.amount || 0).toFixed(2)}</span>
+                  <span className="rec-amt">+${fmtMoney(r.amount || 0)}</span>
                   <span className="muted">{ago(r.at)}</span>
                 </li>
               ))}

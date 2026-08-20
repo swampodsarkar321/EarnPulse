@@ -3,8 +3,15 @@
 import { useEffect, useState } from "react";
 import Nav from "../components/Nav";
 import Footer from "../components/Footer";
-import EarnButton from "../components/EarnButton";
+import { fmtMoney, CONFIG } from "../lib/config";
+import AdModal from "../components/AdModal";
 import { AD_LINKS } from "../lib/links";
+
+const ADS = [
+  { icon: "🛒", title: "Top online store deal", advertiser: "Sponsor · Mainstream", amount: CONFIG.USER_RATE, adUrl: AD_LINKS[0] },
+  { icon: "🎮", title: "New mobile game release", advertiser: "Sponsor · Mainstream", amount: CONFIG.USER_RATE, adUrl: AD_LINKS[1] },
+  { icon: "📱", title: "Win a gift card", advertiser: "Sponsor · Mainstream", amount: CONFIG.USER_RATE, adUrl: AD_LINKS[2] },
+];
 
 export default function Dashboard() {
   const [me, setMe] = useState(null);
@@ -32,24 +39,32 @@ export default function Dashboard() {
             <div className="wallet">
               <div className="bal">
                 <h3>Your Balance</h3>
-                <div className="amt">${me.balance.toFixed(2)}</div>
+                 <div className="amt">${fmtMoney(me.balance)}</div>
                 <p style={{ opacity: .85, fontSize: 13 }}>Welcome, {me.name}</p>
               </div>
               <div className="bal" style={{ background: "linear-gradient(135deg,#00b894,#0984e3)" }}>
                 <h3>Earn Per Click</h3>
-                <div className="amt">$0.01</div>
+                 <div className="amt">${fmtMoney(CONFIG.USER_RATE)}</div>
                 <p style={{ opacity: .85, fontSize: 13 }}>Watch &amp; earn</p>
               </div>
             </div>
 
-            <div className="panel">
-              <h3>Earn now</h3>
-              <div className="earn-list">
-                <EarnButton label="▶ Watch ad & earn $0.01" adUrl={AD_LINKS[0]} />
-                <EarnButton label="▶ Watch ad & earn $0.01" adUrl={AD_LINKS[1]} />
-                <EarnButton label="▶ Watch ad & earn $0.01" adUrl={AD_LINKS[2]} />
+              <div className="panel">
+                <h3>Earn now</h3>
+                <div className="ad-list">
+                  {ADS.map((ad, i) => (
+                    <div className="ad-card" key={i}>
+                      <div className="ad-thumb">{ad.icon}</div>
+                      <div className="ad-info">
+                        <b>{ad.title}</b>
+                        <span className="muted">{ad.advertiser}</span>
+                      </div>
+                      <div className="ad-reward">+${fmtMoney(ad.amount)}</div>
+                      <AdModal ad={ad} />
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
 
             <div className="panel">
               <h3>Request Withdrawal</h3>

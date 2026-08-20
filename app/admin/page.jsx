@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Nav from "../components/Nav";
 import Footer from "../components/Footer";
+import { fmtMoney } from "../lib/config";
 
 export default function Admin() {
   const [key, setKey] = useState("");
@@ -30,16 +31,16 @@ export default function Admin() {
 
         {d && (
           <div className="wallet" style={{ marginTop: 24 }}>
-            <div className="bal"><h3>Net Profit</h3><div className="amt">${(d.netProfit || 0).toFixed(2)}</div></div>
+            <div className="bal"><h3>Net Profit</h3><div className="amt">${fmtMoney(d.netProfit || 0)}</div></div>
             <div className="bal" style={{ background: "linear-gradient(135deg,#00b894,#0984e3)" }}>
               <h3>Total Clicks</h3><div className="amt">{d.clicks}</div></div>
             <div className="bal" style={{ background: "linear-gradient(135deg,#e17055,#d63031)" }}>
-              <h3>Profit / Click</h3><div className="amt">${(d.marginPerClick || 0).toFixed(2)}</div></div>
+              <h3>Profit / Click</h3><div className="amt">${fmtMoney(d.marginPerClick || 0)}</div></div>
           </div>
         )}
         {d && (
           <p className="muted" style={{ marginTop: 12 }}>
-            Paid out to users: ${(d.paidOut || 0).toFixed(2)} · Gross profit: ${(d.profit || 0).toFixed(2)}
+            Paid out to users: ${fmtMoney(d.paidOut || 0)} · Gross profit: ${fmtMoney(d.profit || 0)}
           </p>
         )}
       </section>
