@@ -1,8 +1,14 @@
 import Nav from "./components/Nav";
 import Footer from "./components/Footer";
-import EarnButton from "./components/EarnButton";
 import MemberPanel from "./components/MemberPanel";
+import AdModal from "./components/AdModal";
 import { AD_LINKS } from "./lib/links";
+
+const ADS = [
+  { icon: "🛒", title: "Top online store deal", advertiser: "Sponsor · Mainstream", amount: 0.01, adUrl: AD_LINKS[0] },
+  { icon: "🎮", title: "New mobile game launch", advertiser: "Sponsor · Mainstream", amount: 0.01, adUrl: AD_LINKS[1] },
+  { icon: "📱", title: "Win a gift card", advertiser: "Sponsor · Mainstream", amount: 0.01, adUrl: AD_LINKS[2] },
+];
 
 export default function Home() {
   return (
@@ -99,19 +105,27 @@ export default function Home() {
       <section id="earn" className="offers section" style={{ paddingTop: 0 }}>
         <div className="container">
           <div className="section-head">
-            <span className="eyebrow">Start now</span>
-            <h2>Earn by watching ads</h2>
-            <p>Log in, open an ad, wait a few seconds, then claim your reward. Each view pays your balance.</p>
+            <span className="eyebrow">Available ads</span>
+            <h2>Watch ads &amp; earn</h2>
+            <p>Click “Watch” to open the sponsor ad in a new tab, view it, then claim your reward. Login required.</p>
           </div>
           <div className="offer-frame">
-            <div className="earn-list">
-              <EarnButton label="▶ Watch ad & earn $0.01" adUrl={AD_LINKS[0]} />
-              <EarnButton label="▶ Watch ad & earn $0.01" adUrl={AD_LINKS[1]} />
-              <EarnButton label="▶ Watch ad & earn $0.01" adUrl={AD_LINKS[2]} />
-              <p className="muted" style={{ marginTop: 14, textAlign: "center" }}>
-                Login required. Each click opens a real ad (new tab), then claim your balance.
-              </p>
+            <div className="ad-list">
+              {ADS.map((ad, i) => (
+                <div className="ad-card" key={i}>
+                  <div className="ad-thumb">{ad.icon}</div>
+                  <div className="ad-info">
+                    <b>{ad.title}</b>
+                    <span className="muted">{ad.advertiser}</span>
+                  </div>
+                  <div className="ad-reward">+${ad.amount.toFixed(2)}</div>
+                  <AdModal ad={ad} />
+                </div>
+              ))}
             </div>
+            <p className="muted" style={{ marginTop: 16, textAlign: "center" }}>
+              New ads are added daily. The more you watch, the more you earn.
+            </p>
           </div>
         </div>
       </section>
