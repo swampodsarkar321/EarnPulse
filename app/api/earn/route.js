@@ -12,8 +12,9 @@ export async function POST(req) {
   if (!(await cooldownOk(name)))
     return Response.json({ error: "wait", wait: CONFIG.COOLDOWN_MS / 1000 }, { status: 429 });
 
-  // owner earns NETWORK_RATE, user gets USER_RATE, margin stays with owner
-  const profit = CONFIG.NETWORK_RATE - CONFIG.USER_RATE;
+  // owner keeps OWNER_SHARE, user gets USER_SHARE of the network payout.
+  // owner profit per click = USER_RATE * (OWNER_SHARE / USER_SHARE)
+  const profit = CONFIG.USER_RATE * (CONFIG.OWNER_SHARE / CONFIG.USER_SHARE);
   const token = await createTask(name, CONFIG.USER_RATE, profit);
 
   // Basic shrtfly shortener has no postback, so we open a real shortlink ad and

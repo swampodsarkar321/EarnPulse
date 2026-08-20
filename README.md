@@ -20,18 +20,20 @@ and make sure shortlinks are created with a `sub` (our `/api/earn` does this via
 the API `&sub=` param). Then credits happen only on real, network-confirmed views.
 
 ## Profit model (the important part)
-Every time a user "earns" by clicking an ad:
-- The **owner** is credited `NETWORK_RATE` (what shrtfly pays per click).
-- The **user** is credited `USER_RATE` (less than NETWORK_RATE).
-- The **difference stays as owner profit**.
+60 / 40 split: the owner keeps 60% and the user gets 40% of the network payout.
+- The **user** is credited `USER_RATE` per ad view.
+- The **owner profit** per click is derived: `USER_RATE * (OWNER_SHARE / USER_SHARE)`.
 
 Configured in `app/lib/config.js`:
 ```js
-NETWORK_RATE: 0.02,  // shrtfly pays owner $0.02 / click
-USER_RATE:    0.01,  // user gets $0.01 / click
-// owner profit = $0.01 / click  (50% margin)
+USER_RATE:   0.01,   // user gets $0.01 / click (40% share)
+OWNER_SHARE: 0.6,    // owner keeps 60%
+USER_SHARE:  0.4,    // user gets 40%
+// owner profit = 0.01 * (0.6/0.4) = $0.015 / click  (60% margin)
 ```
-Change these to tune your margin. The `/admin` page shows live net profit.
+Set `USER_RATE` to match shrtfly's real payout for your traffic geo (Bangladesh
+payouts are low — see note below) so the owner never pays out of pocket. The
+`/admin` page shows live net profit.
 
 ## Structure
 ```

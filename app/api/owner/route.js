@@ -9,7 +9,7 @@ export async function GET(req) {
     return Response.json({ error: "unauthorized" }, { status: 401 });
   }
   const o = await getOwner();
-  const marginPerClick = CONFIG.NETWORK_RATE - CONFIG.USER_RATE;
+  const marginPerClick = CONFIG.USER_RATE * (CONFIG.OWNER_SHARE / CONFIG.USER_SHARE);
   return Response.json({
     profit: o.profit,
     clicks: o.clicks,

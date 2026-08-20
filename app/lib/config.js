@@ -1,10 +1,10 @@
 // Profit / payout configuration.
-// The network (shrtfly) pays the OWNER NETWORK_RATE per click.
-// The user is credited USER_RATE. The difference is OWNER PROFIT.
+// 60 / 40 split: owner keeps OWNER_SHARE, user gets USER_SHARE of network payout.
 export const CONFIG = {
-  NETWORK_RATE: 0.02, // what shrtfly pays you per click (example rate)
-  USER_RATE: 0.01,    // what the user gets credited
-  // owner profit per click = NETWORK_RATE - USER_RATE = 0.01 (50% margin)
+  USER_RATE: 0.01,    // what the user is credited per ad view (40% share)
+  OWNER_SHARE: 0.6,   // owner keeps 60%
+  USER_SHARE: 0.4,    // user gets 40%
+  // owner profit per click = USER_RATE * (OWNER_SHARE / USER_SHARE)
   ADMIN_KEY: "ep-admin-123", // change this! used for /admin
 
   // Anti-fraud / verification
