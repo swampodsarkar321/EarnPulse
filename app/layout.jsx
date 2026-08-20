@@ -1,5 +1,6 @@
 import "./globals.css";
 import Script from "next/script";
+import AppShell from "./components/AppShell";
 
 export const metadata = {
   title: "EarnPulse — Watch Ads, Earn Real Money",
@@ -28,7 +29,9 @@ export default function RootLayout({ children }) {
           strategy="afterInteractive"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        <AppShell>{children}</AppShell>
+      </body>
     </html>
   );
 }

@@ -1,23 +1,49 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, createContext, useContext } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { fmtMoney } from "../lib/config";
 
+const AppContext = createContext(null);
+export function useApp() {
+  return useContext(AppContext);
+}
+
 function Bolt() {
-  return <svg viewBox="0 0 24 24"><path d="M13 2 4 14h6l-1 8 9-12h-6z" /></svg>;
+  return <svg viewBox="0 0 24 24"><path d="M13 2 3 14h8l-1 8 11-13h-8z" /></svg>;
 }
 function HomeIcon() {
-  return <svg viewBox="0 0 24 24"><path d="M12 3 3 10v10a1 1 0 0 0 1 1h5v-6h6v6h5a1 1 0 0 0 1-1V10z" /></svg>;
+  return (
+    <svg viewBox="0 0 24 24">
+      <path d="M3 10.2 12 3l9 7.2" />
+      <path d="M5 9.2V20h14V9.2" />
+    </svg>
+  );
 }
 function PlayIcon() {
-  return <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>;
+  return (
+    <svg viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M10 8.5 16.5 12 10 15.5z" />
+    </svg>
+  );
 }
 function WalletIcon() {
-  return <svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2H5a2 2 0 0 0-2 2zm0 2h15a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zm12 4h3v2h-3z" /></svg>;
+  return (
+    <svg viewBox="0 0 24 24">
+      <rect x="3" y="6" width="18" height="13" rx="2.5" />
+      <path d="M3 10h18" />
+      <circle cx="17" cy="14" r="1.3" />
+    </svg>
+  );
 }
 function UserIcon() {
-  return <svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4m0 2c-4 0-8 2-8 5v1h16v-1c0-3-4-5-8-5" /></svg>;
+  return (
+    <svg viewBox="0 0 24 24">
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4.5 20a7.5 7.5 0 0 1 15 0" />
+    </svg>
+  );
 }
 
 const TABS = [
@@ -30,9 +56,17 @@ const TABS = [
 export default function AppShell({ children }) {
   const path = usePathname();
   const [me, setMe] = useState(null);
+  const [lb, setLb] = useState([]);
+
+  async function refresh() {
+    const m = await fetch("/api/me").then((r) => r.json());
+    setMe(m);
+    return m;
+  }
 
   useEffect(() => {
-    fetch("/api/me").then((r) => r.json()).then(setMe);
+    refresh();
+    fetch("/api/leaderboard").then((r) => r.json()).then((d) => setLb(d.list || []));
   }, []);
 
   const loggedIn = !!me?.loggedIn;
@@ -41,28 +75,30 @@ export default function AppShell({ children }) {
   )?.href;
 
   return (
-    <div className="app">
-      <header className="appbar">
-        <div className="appbar-title"><Bolt /> EarnPulse</div>
-        {loggedIn ? (
-          <Link href="/wallet" className="appbar-bal">${fmtMoney(me.balance)}</Link>
-        ) : (
-          <Link href="/login" className="appbar-bal ghost">Login</Link>
+    <AppContext.Provider value={{ me, setMe, refresh, lb }}>
+      <div className="app">
+        <header className="appbar">
+          <div className="appbar-title"><Bolt /> EarnPulse</div>
+          {loggedIn ? (
+            <Link href="/wallet" className="appbar-bal">${fmtMoney(me.balance)}</Link>
+          ) : (
+            <Link href="/login" className="appbar-bal ghost">Login</Link>
+          )}
+        </header>
+
+        <main className="appbody">{children}</main>
+
+        {loggedIn && (
+          <nav className="tabbar">
+            {TABS.map((t) => (
+              <Link key={t.href} href={t.href} className={"tab" + (active === t.href ? " active" : "")}>
+                <span className="tab-ic">{t.icon}</span>
+                <span className="tab-lb">{t.label}</span>
+              </Link>
+            ))}
+          </nav>
         )}
-      </header>
-
-      <main className="appbody">{children}</main>
-
-      {loggedIn && (
-        <nav className="tabbar">
-          {TABS.map((t) => (
-            <Link key={t.href} href={t.href} className={"tab" + (active === t.href ? " active" : "")}>
-              <span className="tab-ic">{t.icon}</span>
-              <span className="tab-lb">{t.label}</span>
-            </Link>
-          ))}
-        </nav>
-      )}
-    </div>
+      </div>
+    </AppContext.Provider>
   );
 }

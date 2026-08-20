@@ -2,21 +2,21 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { fmtMoney, CONFIG } from "../lib/config";
+import { useApp } from "./AppShell";
 
 function medal(i) {
   return ["🥇", "🥈", "🥉"][i] || `#${i + 1}`;
 }
 
 export default function DashboardView() {
-  const [me, setMe] = useState(null);
-  const [lb, setLb] = useState([]);
+  const { me, lb } = useApp();
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    fetch("/api/me").then((r) => r.json()).then(setMe);
-    fetch("/api/leaderboard").then((r) => r.json()).then((d) => setLb(d.list || []));
-  }, []);
+    if (me !== null) setReady(true);
+  }, [me]);
 
-  if (!me) return <p className="muted">Loading…</p>;
+  if (!ready) return <p className="muted">Loading…</p>;
   if (!me.loggedIn)
     return (
       <div className="tool">

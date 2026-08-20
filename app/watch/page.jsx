@@ -1,10 +1,7 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import AppShell from "../components/AppShell";
-import AdModal from "../components/AdModal";
 import { AD_LINKS } from "../lib/links";
 import { CONFIG, fmtMoney } from "../lib/config";
+import { useApp } from "../components/AppShell";
+import AdModal from "../components/AdModal";
 
 const ADS = [
   { id: "ad1", icon: "🛒", title: "Top online store deal", advertiser: "Sponsor · Mainstream", amount: CONFIG.USER_RATE, adUrl: AD_LINKS[0] },
@@ -13,50 +10,44 @@ const ADS = [
 ];
 
 export default function Watch() {
-  const [me, setMe] = useState(null);
+  const { me } = useApp();
 
-  useEffect(() => {
-    fetch("/api/me").then((r) => r.json()).then(setMe);
-  }, []);
+  if (!me) return <p className="muted">Loading…</p>;
+
+  if (!me.loggedIn) {
+    return (
+      <section className="tool">
+        <h2>Please login</h2>
+        <p className="muted">You must be logged in to watch ads and earn.</p>
+        <a href="/login" className="btn btn-lg">Login</a>
+      </section>
+    );
+  }
 
   return (
-    <AppShell>
-      {!me && <p className="muted">Loading...</p>}
+    <>
+      <div className="section-head">
+        <span className="eyebrow">Watch ads</span>
+        <h2>Earn by watching ads</h2>
+        <p className="muted">Open the sponsor ad in a new tab, view it, wait, then claim. Limit 20 views per ad per day.</p>
+      </div>
 
-      {me && !me.loggedIn && (
-        <div className="tool">
-          <h2>Please login</h2>
-          <p className="muted">You must be logged in to watch ads and earn.</p>
-          <a href="/login" className="btn btn-lg">Login</a>
-        </div>
-      )}
-
-      {me && me.loggedIn && (
-        <>
-          <div className="section-head">
-            <span className="eyebrow">Watch ads</span>
-            <h2>Earn by watching ads</h2>
-            <p className="muted">Open the sponsor ad in a new tab, view it, wait, then claim. Limit 20 views per ad per day.</p>
+      <div className="ad-list">
+        {ADS.map((ad) => (
+          <div className="ad-card" key={ad.id}>
+            <div className="ad-thumb">{ad.icon}</div>
+            <div className="ad-info">
+              <b>{ad.title}</b>
+              <span className="muted">{ad.advertiser}</span>
+            </div>
+            <div className="ad-reward">+${fmtMoney(ad.amount)}</div>
+            <AdModal ad={ad} />
           </div>
-
-          <div className="ad-list">
-            {ADS.map((ad) => (
-              <div className="ad-card" key={ad.id}>
-                <div className="ad-thumb">{ad.icon}</div>
-                <div className="ad-info">
-                  <b>{ad.title}</b>
-                  <span className="muted">{ad.advertiser}</span>
-                </div>
-                <div className="ad-reward">+${fmtMoney(ad.amount)}</div>
-                <AdModal ad={ad} />
-              </div>
-            ))}
-          </div>
-          <p className="muted" style={{ marginTop: 14, textAlign: "center" }}>
-            New ads are added daily. The more you watch, the more you earn.
-          </p>
-        </>
-      )}
-    </AppShell>
+        ))}
+      </div>
+      <p className="muted" style={{ marginTop: 14, textAlign: "center" }}>
+        New ads are added daily. The more you watch, the more you earn.
+      </p>
+    </>
   );
 }
