@@ -4,20 +4,18 @@ import { useEffect, useState } from "react";
 import Nav from "../components/Nav";
 import Footer from "../components/Footer";
 import { fmtMoney, CONFIG } from "../lib/config";
-import AdModal from "../components/AdModal";
-import { AD_LINKS } from "../lib/links";
 
-const ADS = [
-  { id: "ad1", icon: "🛒", title: "Top online store deal", advertiser: "Sponsor · Mainstream", amount: CONFIG.USER_RATE, adUrl: AD_LINKS[0] },
-  { id: "ad2", icon: "🎮", title: "New mobile game release", advertiser: "Sponsor · Mainstream", amount: CONFIG.USER_RATE, adUrl: AD_LINKS[1] },
-  { id: "ad3", icon: "📱", title: "Win a gift card", advertiser: "Sponsor · Mainstream", amount: CONFIG.USER_RATE, adUrl: AD_LINKS[2] },
-];
+function medal(i) {
+  return ["🥇", "🥈", "🥉"][i] || `#${i + 1}`;
+}
 
 export default function Dashboard() {
   const [me, setMe] = useState(null);
+  const [lb, setLb] = useState([]);
 
   useEffect(() => {
     fetch("/api/me").then((r) => r.json()).then(setMe);
+    fetch("/api/leaderboard").then((r) => r.json()).then((d) => setLb(d.list || []));
   }, []);
 
   return (
@@ -27,7 +25,7 @@ export default function Dashboard() {
         {!me && <p className="muted">Loading...</p>}
 
         {me && !me.loggedIn && (
-          <div className="tool container">
+          <div className="tool">
             <h2>Please login</h2>
             <p className="muted">You must be logged in to view your dashboard.</p>
             <a href="/login" className="btn">Login</a>
@@ -39,44 +37,33 @@ export default function Dashboard() {
             <div className="wallet">
               <div className="bal">
                 <h3>Your Balance</h3>
-                 <div className="amt">${fmtMoney(me.balance)}</div>
+                <div className="amt">${fmtMoney(me.balance)}</div>
                 <p style={{ opacity: .85, fontSize: 13 }}>Welcome, {me.name}</p>
               </div>
               <div className="bal" style={{ background: "linear-gradient(135deg,#00b894,#0984e3)" }}>
                 <h3>Earn Per Click</h3>
-                 <div className="amt">${fmtMoney(CONFIG.USER_RATE)}</div>
+                <div className="amt">${fmtMoney(CONFIG.USER_RATE)}</div>
                 <p style={{ opacity: .85, fontSize: 13 }}>Watch &amp; earn</p>
               </div>
             </div>
 
-              <div className="panel">
-                <h3>Earn now</h3>
-                <div className="ad-list">
-                  {ADS.map((ad, i) => (
-                    <div className="ad-card" key={i}>
-                      <div className="ad-thumb">{ad.icon}</div>
-                      <div className="ad-info">
-                        <b>{ad.title}</b>
-                        <span className="muted">{ad.advertiser}</span>
-                      </div>
-                      <div className="ad-reward">+${fmtMoney(ad.amount)}</div>
-                      <AdModal ad={ad} />
-                    </div>
-                  ))}
-                </div>
-              </div>
-
             <div className="panel">
-              <h3>Request Withdrawal</h3>
-              <div className="form-row">
-                <div><label>Method</label>
-                  <select><option>bKash</option><option>Nagad</option><option>USDT</option><option>PayPal</option></select></div>
-                <div><label>Amount ($)</label><input type="number" placeholder="10.00" /></div>
-                <div><label>&nbsp;</label><button className="btn">Request Payout</button></div>
-              </div>
-              <p className="muted" style={{ textAlign: "left", marginTop: 12 }}>
-                Payouts are processed manually by the admin from network earnings.
-              </p>
+              <h3>🏆 Top Earners</h3>
+              {lb.length > 0 ? (
+                <ul className="lb">
+                  {lb.map((u, i) => (
+                    <li key={u.name} className={i < 3 ? "top" : ""}>
+                      <span className="rank">{medal(i)}</span>
+                      <span className="lb-name">
+                        {u.name}{u.name === me.name ? " (you)" : ""}
+                      </span>
+                      <span className="lb-amt">${fmtMoney(u.balance)}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="muted">No rankings yet — be the first to earn!</p>
+              )}
             </div>
           </>
         )}
