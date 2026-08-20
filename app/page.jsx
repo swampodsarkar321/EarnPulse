@@ -1,6 +1,7 @@
 import Nav from "./components/Nav";
 import Footer from "./components/Footer";
 import EarnButton from "./components/EarnButton";
+import MemberPanel from "./components/MemberPanel";
 import { AD_LINKS } from "./lib/links";
 
 export default function Home() {
@@ -93,7 +94,9 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="offers section" style={{ paddingTop: 0 }}>
+      <MemberPanel />
+
+      <section id="earn" className="offers section" style={{ paddingTop: 0 }}>
         <div className="container">
           <div className="section-head">
             <span className="eyebrow">Start now</span>

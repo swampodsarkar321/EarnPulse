@@ -1,5 +1,5 @@
 import { db } from "./firebase";
-import { ref, get, set, child, update } from "firebase/database";
+import { ref, get, set, child, update, push } from "firebase/database";
 import { CONFIG } from "./config";
 
 // All data lives in Firebase Realtime Database now (persists on Vercel).
@@ -96,6 +96,12 @@ export async function creditTask(token) {
   if (!u) return { error: "user not found" };
   const newBalance = (u.balance || 0) + t.userAmount;
   await set(child(ref(db, "users"), name), { ...u, balance: newBalance });
+
+  // keep a short recent-activity history for the dashboard
+  await push(ref(db, "users/" + name + "/history"), {
+    amount: t.userAmount,
+    at: Date.now(),
+  });
 
   const o = await getOwner();
   const newOwner = {

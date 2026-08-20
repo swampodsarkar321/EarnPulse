@@ -161,9 +161,32 @@ input:focus, select:focus { border-color: var(--accent); }
   border: 1px solid var(--border); word-break: break-all; }
 .result a { color: var(--accent-2); }
 
+/* ---------- Member panel ---------- */
+.member-empty { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 40px; text-align: center; max-width: 620px; margin: 0 auto; }
+.member-empty h3 { font-size: 22px; margin-bottom: 8px; }
+.member-empty p { margin-bottom: 18px; }
+.member-grid { display: grid; grid-template-columns: 1.4fr repeat(3, 1fr); gap: 18px; align-items: stretch; }
+.member-balance { background: linear-gradient(135deg, var(--accent), var(--accent-2)); border-radius: var(--radius);
+  padding: 26px; color: #fff; display: flex; flex-direction: column; justify-content: center; box-shadow: var(--shadow); }
+.member-balance .amt { font-size: 44px; font-weight: 900; margin-top: 6px; }
+.opt-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px;
+  display: flex; flex-direction: column; gap: 6px; transition: transform .15s, border-color .15s; }
+.opt-card:hover { transform: translateY(-3px); border-color: rgba(124, 92, 255, .5); }
+.opt-card .ic { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; font-size: 18px;
+  background: rgba(24, 200, 255, .12); margin-bottom: 6px; }
+.opt-card b { font-size: 16px; }
+.opt-card span.muted { font-size: 13px; }
+.recent { list-style: none; }
+.recent li { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 15px; }
+.recent li:last-child { border-bottom: none; }
+.recent .rec-amt { margin-left: auto; font-weight: 700; color: var(--green); }
+.recent .muted { font-size: 13px; }
+
 @media (max-width: 860px) {
   .stats-grid, .cards, .feat-grid, .testi-grid { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr 1fr; }
+  .member-grid { grid-template-columns: 1fr; }
   .hero h1 { font-size: 40px; }
   .section-head h2, .cta-box h2 { font-size: 30px; }
   .nav nav a:not(.btn) { display: none; }
