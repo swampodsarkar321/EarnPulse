@@ -165,3 +165,39 @@ export async function creditTask(token) {
   await set(ref(db, "tasks/" + token), { ...t, claimed: true, claimedAt: Date.now() });
   return { ok: true, balance: newBalance, earned: t.userAmount, ownerProfit: t.ownerProfit, dailyLeft: typeof dailyLeft === "number" ? dailyLeft : null };
 }
+
+// --- CPAlead / offerwall postback crediting ---
+// Credits a user from a network payout using the same 60/40 split.
+export async function creditFromNetwork(name, payout, meta = {}) {
+  const u = await getUser(name);
+  if (!u) return null;
+  const userAmount = +(payout * CONFIG.USER_SHARE).toFixed(6);
+  const ownerProfit = +(payout * CONFIG.OWNER_SHARE).toFixed(6);
+  const newBalance = (u.balance || 0) + userAmount;
+  await set(child(ref(db, "users"), name), { ...u, balance: newBalance });
+
+  await push(ref(db, "users/" + name + "/history"), {
+    amount: userAmount,
+    at: Date.now(),
+    type: meta.type || "offer",
+    detail: meta.detail || "",
+  });
+
+  const o = await getOwner();
+  await set(ref(db, "owner"), {
+    profit: (o.profit || 0) + ownerProfit,
+    clicks: (o.clicks || 0) + 1,
+    paidOut: o.paidOut || 0,
+  });
+  return { ok: true, balance: newBalance, userAmount, ownerProfit };
+}
+
+// Dedupe postbacks by transaction id so retries / double-fires don't double-credit.
+export async function tidSeen(tid) {
+  const snap = await get(ref(db, "postbacks/" + tid));
+  return snap.exists();
+}
+
+export async function markTid(tid, data) {
+  await set(ref(db, "postbacks/" + tid), { at: Date.now(), ...data });
+}

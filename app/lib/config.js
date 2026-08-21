@@ -16,6 +16,16 @@ export const CONFIG = {
 
   // Destination the shrtfly shortlink points to (change to a real offer page)
   AD_DESTINATION: "https://example.com/page",
+
+  // --- CPAlead offerwall (rewards / incent traffic) ---
+  // Set NEXT_PUBLIC_CPALEAD_PUB_ID in Vercel env (client-visible, for the iframe).
+  // Set CPALEAD_POSTBACK_SECRET in Vercel env (server-only, must match the
+  // secret you append to the postback URL in the CPAlead dashboard).
+  CPALEAD_PUB_ID: process.env.NEXT_PUBLIC_CPALEAD_PUB_ID || "",
+  CPALEAD_POSTBACK_SECRET: process.env.CPALEAD_POSTBACK_SECRET || "change-me-cpalead",
+
+  // Max single payout we will credit from a postback (abuse guard).
+  CPALEAD_MAX_PAYOUT: 50,
 };
 
 // Format money so small rewards (e.g. $0.0005) still show correctly.
